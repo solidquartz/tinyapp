@@ -49,6 +49,4 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-const generateRandomString = () => {
-//implement me!
-};
+const generateRandomString = (length = 6) => Math.random().toString(20).substr(2, length);
