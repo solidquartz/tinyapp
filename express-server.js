@@ -81,6 +81,13 @@ app.post("/login", (req, res) => {
   res.redirect(`/urls/`);
 });
 
+//logout
+app.post("/logout", (req, res) => {
+  const { username } = req.body;
+  res.clearCookie("username", username);
+  res.redirect(`/urls/`);
+});
+
 
 
 app.listen(PORT, () => {
