@@ -57,7 +57,6 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect('/urls/');
@@ -68,10 +67,17 @@ app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = req.body["name"];
   urlDatabase[shortURL] = longURL;
-  //new below here
   console.log("shortURL is: ", shortURL, " longURL is: ", longURL, " urlDatabase is: ", urlDatabase, " req body is: ", req.body["name"]);
   res.redirect(`/urls/${shortURL}`);
 });
+
+//login cookie
+app.post("/login", (req, res) => {
+  res.cookie("username", req.body);
+  res.redirect(`/urls/`);
+});
+
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
