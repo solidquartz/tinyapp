@@ -65,8 +65,10 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 //post new longURL to shortURL
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = req.body.longURL;
+  const longURL = req.body["name"];
   urlDatabase[shortURL] = longURL;
+  //new below here
+  // console.log("shortURL is: ", shortURL, " longURL is: ", longURL, " urlDatabase is: ", urlDatabase, " req body is: ", req.body["name"]);
   res.redirect(`/urls/${shortURL}`);
 });
 
