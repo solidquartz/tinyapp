@@ -68,7 +68,7 @@ app.post("/urls/:shortURL", (req, res) => {
   const longURL = req.body["name"];
   urlDatabase[shortURL] = longURL;
   //new below here
-  // console.log("shortURL is: ", shortURL, " longURL is: ", longURL, " urlDatabase is: ", urlDatabase, " req body is: ", req.body["name"]);
+  console.log("shortURL is: ", shortURL, " longURL is: ", longURL, " urlDatabase is: ", urlDatabase, " req body is: ", req.body["name"]);
   res.redirect(`/urls/${shortURL}`);
 });
 
