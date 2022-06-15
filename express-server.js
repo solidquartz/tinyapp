@@ -57,17 +57,17 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 
-//new part
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect('/urls/');
 });
 
-// //new part 2
-// app.post("/urls/:id", (req, res) => {
-//   delete urlDatabase[req.params.shortURL];
-//   res.redirect('/urls/');
-// });
+//post new longURL to shortURL
+app.post("/urls/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL;
+  const longURL = req.body.longURL;
+  res.redirect(`/u/:shortURL`);
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
