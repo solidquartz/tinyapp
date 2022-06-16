@@ -47,6 +47,15 @@ const getIdFromEmail = (email) => {
   return null;
 };
 
+//look up email
+const lookUpEmail = (email) => {
+  for (let userId in users) {
+    if (email === users[userId].email) {
+      return users[userId].email;
+    }
+  }
+  return null;
+};
 
 ////////endpoints////////
 
@@ -133,18 +142,28 @@ app.post("/logout", (req, res) => {
 app.get("/register/", (req, res) => {
   const userId = req.cookies["user_id"];
   const templateVars = { user: users[userId], urls: urlDatabase };
-  // console.log(templateVars.user);
   res.render("register", templateVars);
 });
 
 //registration handler
-app.post("/register/", (req, res) => {
+app.post("/register/", (req, res, err) => {
   const userId = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
-  users[userId] = { id: userId, email: email, password: password };
-  res.cookie("user_id", userId);
-  res.redirect("/urls");
+
+  if (email === "" || password === "") {
+    res.status(400).send("Error! 400");
+
+    //checks if the email is already registered
+  } else if (email === lookUpEmail(email)) {
+    res.status(400).send("Error! 400");
+
+  } else {
+    users[userId] = { id: userId, email: email, password: password };
+    console.log(users);
+    res.cookie("user_id", userId);
+    res.redirect("/urls");
+  }
 });
 
 
