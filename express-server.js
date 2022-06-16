@@ -13,10 +13,12 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-//helper function
+app.use(express.urlencoded({ extended: true }));
+
+//helper function to generate shortURL
 const generateRandomString = (length = 6) => Math.random().toString(20).substr(2, length);
 
-app.use(express.urlencoded({ extended: true }));
+
 
 
 app.get("/", (req, res) => {
@@ -31,23 +33,26 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+//set username with cookies
 app.get("/urls", (req, res) => {
-  console.log(req.cookies);
   const templateVars = { username: req.cookies["username"], urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
+//
 app.get("/urls/new", (req, res) => {
   const templateVars = { username: req.cookies["username"] };
   res.render("urls_new", templateVars);
 });
 
+//
 app.get("/urls/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   const templateVars = { username: req.cookies["username"], shortURL: req.params.shortURL, longURL };
   res.render("urls_show", templateVars);
 });
 
+//create shortURL
 app.post("/urls", (req, res) => {
   console.log(req.body); //refers to the form body
   const shortURL = generateRandomString();
@@ -55,11 +60,13 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
+//go to longURL from shortURL
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
 
+//delete URL
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect('/urls/');
@@ -74,20 +81,28 @@ app.post("/urls/:shortURL", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
-//login cookie
+//login - create cookie
 app.post("/login", (req, res) => {
   const { username } = req.body;
   res.cookie("username", username);
   res.redirect(`/urls/`);
 });
 
-//logout
+//logout - clear cookie
 app.post("/logout", (req, res) => {
   const { username } = req.body;
   res.clearCookie("username", username);
   res.redirect(`/urls/`);
 });
 
+//register account
+app.get("/register/", (req, res) => {
+  const templateVars = { username: req.cookies["username"] };
+  res.render("register", templateVars);
+  res.redirect(`/urls`);
+});
+
+//app.post
 
 
 app.listen(PORT, () => {
