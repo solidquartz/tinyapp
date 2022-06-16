@@ -152,11 +152,11 @@ app.post("/register/", (req, res, err) => {
   const password = req.body.password;
 
   if (email === "" || password === "") {
-    res.status(400).send("Error! 400");
+    return res.status(400).send("Error!");
 
     //checks if the email is already registered
   } else if (email === lookUpEmail(email)) {
-    res.status(400).send("Error! 400");
+    return res.status(400).send("Error!");
 
   } else {
     users[userId] = { id: userId, email: email, password: password };
