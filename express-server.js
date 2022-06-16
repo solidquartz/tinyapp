@@ -124,17 +124,22 @@ app.post("/urls/:shortURL", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.user;
   res.cookie("user_id", getIdFromEmail(email).id);
-  res.redirect(`/urls/`);
+  res.redirect("/urls/");
 });
 
 //logout - clear cookie
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
-  res.redirect(`/urls/`);
+  res.redirect("/urls/");
+});
+
+app.get("/login", (req, res) => {
+  const templateVars = { user: req.cookies["user_id"] || null };
+  res.render("login", templateVars);
 });
 
 //register account
-app.get("/register/", (req, res) => {
+app.get("/register", (req, res) => {
   const userId = req.cookies["user_id"];
   const templateVars = { user: users[userId], urls: urlDatabase };
   res.render("register", templateVars);
