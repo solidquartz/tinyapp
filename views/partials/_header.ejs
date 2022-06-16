@@ -17,26 +17,24 @@
 
       <!-- ////////// logged out ////////// -->
       <div class="float: right">
-        <% if(!username) { %>
+        <% if(!user) { %>
           <div class="form-example">
             <form method="POST" action="/login/">
-              <input type="text" name="username" placeholder="username" id="login" required>
+              <input type="text" name="user" placeholder="user" id="login" required>
               <button type="submit" class="btn btn-outline-secondary">Log In</button>
             </form>
           </div>
 
           <!-- ////////// logged in ////////// -->
           <% } else { %>
-            <div style="margin-right: 1em">Logged in as: <%= username %> </div>
-
+            
               <form method="POST" action="/logout/">
+                Logged in as: <%= user.email %>
+                
                 <button type="submit" class="btn btn-outline-secondary">Log Out</button>
               </form>
 
                 <% } %>
-
-           
       </div>
-
     </nav>
 </header>
