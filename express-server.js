@@ -75,8 +75,6 @@ app.get("/hello", (req, res) => {
 app.get("/urls", (req, res) => {
   const userId = req.cookies["user_id"];
   const templateVars = { user: users[userId], urls: urlDatabase };
-  //console.log(templateVars.users[userId]);
-  console.log(userId);
   res.render("urls_index", templateVars);
 });
 
@@ -97,7 +95,6 @@ app.get("/urls/:shortURL", (req, res) => {
 
 //create shortURL
 app.post("/urls", (req, res) => {
-  console.log(req.body); //refers to the form body
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
@@ -120,7 +117,6 @@ app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = req.body["name"];
   urlDatabase[shortURL] = longURL;
-  // console.log("shortURL is: ", shortURL, " longURL is: ", longURL, " urlDatabase is: ", urlDatabase, " req body is: ", req.body["name"]);
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -133,7 +129,6 @@ app.post("/login", (req, res) => {
 
 //logout - clear cookie
 app.post("/logout", (req, res) => {
-
   res.clearCookie("user_id");
   res.redirect(`/urls/`);
 });
