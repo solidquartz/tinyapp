@@ -3,23 +3,42 @@ const app = express();
 const PORT = 8080; // default port 8080
 app.set("view engine", "ejs");
 
+app.use(express.urlencoded({ extended: true }));
+
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
+
+
+////////databases//////////
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
-app.use(express.urlencoded({ extended: true }));
+
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+};
+
+////////////////////////
 
 //helper function to generate shortURL
 const generateRandomString = (length = 6) => Math.random().toString(20).substr(2, length);
 
 
-
+////////endpoints////////
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -99,12 +118,22 @@ app.post("/logout", (req, res) => {
 app.get("/register/", (req, res) => {
   const templateVars = { username: req.cookies["username"] };
   res.render("register", templateVars);
-  res.redirect(`/urls`);
 });
 
-//app.post
+//registration handler
+app.post("/register/", (req, res) => {
+  const userId = generateRandomString();
+  const email = req.body.email;
+  const password = req.body.password;
+  users[userId] = { id: userId, email: email, password: password };
+  console.log("userID is: ", userId, users);
+  res.cookie("user_id", userId);
+  res.redirect("/urls");
+});
 
 
+
+////////////////////
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
