@@ -22,9 +22,9 @@
     <div class="card-header"></div>
     <div class="card-body">
 
-      <h5 class="card-title">TinyURL for: <%= longURL %>
+      <h5 class="card-title">TinyURL for: <%= urlDatabase[shortURL].longURL %>
       </h5>
-      <p class="card-text">Short URL: <a href="/u/<%= shortURL %>">
+      <p class="card-text">Short URL: <a href="<%= urlDatabase[shortURL].longURL %>">
           <%= shortURL %>
         </a></p>
 
