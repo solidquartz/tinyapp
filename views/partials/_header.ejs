@@ -17,7 +17,7 @@
 
       <!-- ////////// logged out ////////// -->
       <div class="float: right">
-        <% if(typeof user === "undefined" || typeof user !== "object" || typeof user.email !== "string") { %>
+        <% if(user === null || user === undefined) { %>
           <a href="/register">
             <button type="button" class="btn btn-light">Register</button>
           </a>

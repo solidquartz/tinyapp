@@ -69,13 +69,15 @@ const checkLogIn = (req, res) => {
   const userId = req.cookies["user_id"];
   if (!userId) {
     res.redirect("/login");
-  }
-  for (const user in users) {
-    if (user === users.id) {
-      return userId;
+  } else {
+    for (const user in users) {
+      if (user === userId) {
+        return userId;
+      }
     }
+    res.clearCookie("user_id");
+    res.redirect("/login");
   }
-  res.redirect("/login");
 };
 
 //////////////////////////////////
@@ -105,17 +107,17 @@ app.get("/urls", (req, res) => {
 
 //create URL page
 app.get("/urls/new", (req, res) => {
-  const userId = req.cookies["user_id"];
-  if (!userId) {
-    res.redirect("/login");
-  }
+  const userId = checkLogIn(req, res);
   const templateVars = { user: users[userId], urls: urlDatabase };
-  res.render("urls_new", templateVars);
+  if (userId) {
+    res.render("urls_new", templateVars);
+  }
 });
 
 //URL show page (where edit is)
 app.get("/urls/:shortURL", (req, res) => {
-  const userId = req.cookies["user_id"];
+  const userId = checkLogIn(req, res);
+
   const shortURL = req.params.shortURL;
   const longURL = req.params.longURL;
   const templateVars = { user: users[userId], urlDatabase, shortURL, longURL };
@@ -124,11 +126,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
 //create shortURL
 app.post("/urls", (req, res) => {
-  const userId = req.cookies["user_id"];
-  console.log(userId);
-  if (!userId) {
-    res.redirect("/login");
-  }
+  const userId = checkLogIn(req, res);
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   //add to db object
@@ -221,6 +219,7 @@ app.post("/register/", (req, res) => {
 
   } else {
     users[userId] = { id: userId, email: email, password: password };
+    console.log(users);
     res.cookie("user_id", userId);
     res.redirect("/urls");
   }
