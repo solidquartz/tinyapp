@@ -14,8 +14,14 @@ app.use(cookieParser());
 ////////databases//////////
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW"
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW"
+  }
 };
 
 
@@ -76,7 +82,7 @@ app.get("/urls", (req, res) => {
   if (!userId) {
     res.redirect("/login");
   }
-  const templateVars = { user: users[userId], urls: urlDatabase };
+  const templateVars = { user: users[userId], urls: urlDatabase[userId] };
   res.render("urls_index", templateVars);
 });
 
@@ -94,7 +100,6 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   const userId = req.cookies["user_id"];
-  
   const templateVars = { user: users[userId], urls: urlDatabase, shortURL: req.params.shortURL, longURL };
   res.render("urls_show", templateVars);
 });
@@ -102,11 +107,16 @@ app.get("/urls/:shortURL", (req, res) => {
 //create shortURL
 app.post("/urls", (req, res) => {
   const userId = req.cookies["user_id"];
+  console.log(userId);
   if (!userId) {
     res.redirect("/login");
   }
   const shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
+  const longURL = req.body.longURL;
+  //add to db object
+  urlDatabase[shortURL] = { "longURL": longURL, "userID": userId };
+  console.log(urlDatabase);
+
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -138,11 +148,9 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const user = getIdFromEmail(email);
-
   if (email !== lookUpEmail(email)) {
     return res.status(403).send("That email has not been registered to an account (403)");
   }
-
   if (user.password === password) {
     res.cookie("user_id", user.id);
     res.redirect("/urls");
@@ -161,11 +169,9 @@ app.post("/logout", (req, res) => {
 app.get("/login", (req, res) => {
   const userId = req.cookies["user_id"];
   const templateVars = { user: req.cookies["user_id"] || null };
-
   if (userId) {
     res.redirect("/urls");
   }
-
   res.render("login", templateVars);
 });
 
