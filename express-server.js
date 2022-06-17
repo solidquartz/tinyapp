@@ -73,6 +73,9 @@ app.get("/hello", (req, res) => {
 //index page
 app.get("/urls", (req, res) => {
   const userId = req.cookies["user_id"];
+  if (!userId) {
+    res.redirect("/login");
+  }
   const templateVars = { user: users[userId], urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
@@ -91,6 +94,7 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   const userId = req.cookies["user_id"];
+  
   const templateVars = { user: users[userId], urls: urlDatabase, shortURL: req.params.shortURL, longURL };
   res.render("urls_show", templateVars);
 });
