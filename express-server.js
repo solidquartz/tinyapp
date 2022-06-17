@@ -148,14 +148,25 @@ app.post("/logout", (req, res) => {
 
 //login page
 app.get("/login", (req, res) => {
+  const userId = req.cookies["user_id"];
   const templateVars = { user: req.cookies["user_id"] || null };
+
+  if (userId) {
+    res.redirect("/urls");
+  }
+
   res.render("login", templateVars);
 });
 
 ////////////////REGISTRATION////////////////
 
-//register account
+//register page
 app.get("/register", (req, res) => {
+  const userId = req.cookies["user_id"];
+
+  if (userId) {
+    res.redirect("/urls");
+  }
   const templateVars = { user: null, urls: urlDatabase };
   res.render("register", templateVars);
 });
@@ -175,7 +186,6 @@ app.post("/register/", (req, res) => {
 
   } else {
     users[userId] = { id: userId, email: email, password: password };
-    console.log(users);
     res.cookie("user_id", userId);
     res.redirect("/urls");
   }
