@@ -62,6 +62,22 @@ const lookUpEmail = (email) => {
   return null;
 };
 
+
+//check if user is logged in
+const checkLogIn = (req, res) => {
+
+  const userId = req.cookies["user_id"];
+  if (!userId) {
+    res.redirect("/login");
+  }
+  for (const user in users) {
+    if (user === users.id) {
+      return userId;
+    }
+  }
+  res.redirect("/login");
+};
+
 //////////////////////////////////
 
 app.get("/", (req, res) => {
@@ -82,7 +98,8 @@ app.get("/urls", (req, res) => {
   if (!userId) {
     res.redirect("/login");
   }
-  const templateVars = { user: users[userId], urls: urlDatabase[userId] };
+
+  const templateVars = { user: users[userId], urlDatabase };
   res.render("urls_index", templateVars);
 });
 
