@@ -135,6 +135,8 @@ app.post("/login", (req, res) => {
   if (user.password === password) {
     res.cookie("user_id", user.id);
     res.redirect("/urls");
+  } else {
+    return res.status(403).send("Email and password do not match (403)");
   }
 });
 
