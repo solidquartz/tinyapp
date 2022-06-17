@@ -135,8 +135,14 @@ app.post("/urls", (req, res) => {
 
 //go to longURL from shortURL
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(longURL);
+
+  for (const shortURL in urlDatabase) {
+    if (shortURL === req.params.shortURL) {
+      const longURL = urlDatabase[req.params.shortURL].longURL;
+      res.redirect(longURL);
+    }
+  }
+  res.send("Error! URL doesn't exist.");
 });
 
 //delete URL
