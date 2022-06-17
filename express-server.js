@@ -96,10 +96,7 @@ app.get("/hello", (req, res) => {
 
 //index page
 app.get("/urls", (req, res) => {
-  const userId = req.cookies["user_id"];
-  if (!userId) {
-    res.redirect("/login");
-  }
+  const userId = checkLogIn(req, res);
 
   const templateVars = { user: users[userId], urlDatabase };
   res.render("urls_index", templateVars);
@@ -152,7 +149,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = req.body["name"];
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL].longURL = longURL;
   res.redirect(`/urls/${shortURL}`);
 });
 
