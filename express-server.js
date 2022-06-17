@@ -56,7 +56,7 @@ const lookUpEmail = (email) => {
   return null;
 };
 
-////////endpoints////////
+//////////////////////////////////
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -70,21 +70,21 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
-//set username with cookies
+//index page
 app.get("/urls", (req, res) => {
   const userId = req.cookies["user_id"];
   const templateVars = { user: users[userId], urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
-//
+//create URL page
 app.get("/urls/new", (req, res) => {
   const userId = req.cookies["user_id"];
   const templateVars = { user: users[userId], urls: urlDatabase };
   res.render("urls_new", templateVars);
 });
 
-//
+//URL show page (where edit is)
 app.get("/urls/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   const userId = req.cookies["user_id"];
@@ -119,14 +119,26 @@ app.post("/urls/:shortURL", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
-//login - create cookie
+
+////////////////LOG IN/OUT ////////////////
+
+//login endpoint
 app.post("/login", (req, res) => {
   const email = req.body.email;
-  res.cookie("user_id", getIdFromEmail(email).id);
-  res.redirect("/urls/");
+  const password = req.body.password;
+  const user = getIdFromEmail(email);
+
+  if (email !== lookUpEmail(email)) {
+    return res.status(403).send("That email has not been registered to an account (403)");
+  }
+
+  if (user.password === password) {
+    res.cookie("user_id", user.id);
+    res.redirect("/urls");
+  }
 });
 
-//logout - clear cookie
+//log out
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
   res.redirect("/login");
@@ -137,6 +149,8 @@ app.get("/login", (req, res) => {
   const templateVars = { user: req.cookies["user_id"] || null };
   res.render("login", templateVars);
 });
+
+////////////////REGISTRATION////////////////
 
 //register account
 app.get("/register", (req, res) => {
@@ -151,11 +165,11 @@ app.post("/register/", (req, res) => {
   const password = req.body.password;
 
   if (email === "" || password === "") {
-    return res.status(400).send("Error!");
+    return res.status(400).send("Please enter an email and a password (400)");
 
     //checks if the email is already registered
   } else if (email === lookUpEmail(email)) {
-    return res.status(400).send("Error!");
+    return res.status(400).send("Email address has already been registered to an account (400)");
 
   } else {
     users[userId] = { id: userId, email: email, password: password };
@@ -166,7 +180,8 @@ app.post("/register/", (req, res) => {
 });
 
 
-////////////////////
+//////////////////////////////
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
