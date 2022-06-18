@@ -44,3 +44,11 @@ describe('getIdFromEmail', function() {
     assert.strictEqual(userId, expectedUserID, "The user IDs was found");
   });
 });
+
+describe('lookUpEmail', function() {
+  it('should return the email if it exists in the database', function() {
+    const email = lookUpEmail("user@example.com", testUsers);
+    const expectedEmail = "user@example.com";
+    assert.strictEqual(email, expectedEmail, "The email was found");
+  });
+});
