@@ -14,7 +14,7 @@ app.use(cookieParser());
 ////////databases//////////
 
 const urlDatabase = {
-  b6UTxQ: {
+  sgq3y6: {
     longURL: "https://www.tsn.ca",
     userID: "aJ48lW"
   },
@@ -136,7 +136,7 @@ app.get("/urls/new", (req, res) => {
   const userId = checkLogIn(req, res);
   const urls = urlsForUser(userId, urlDatabase);
 
-  const templateVars = { user: users[userId], urls};
+  const templateVars = { user: users[userId], urls };
   if (urls) {
     res.render("urls_new", templateVars);
   } else {
@@ -180,7 +180,13 @@ app.get("/u/:shortURL", (req, res) => {
 
 //delete URL
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
+  const userId = checkLogIn(req, res);
+  const owned = urlsForUser(userId, urlDatabase);
+  const shortURL = req.params.shortURL;
+  if (!userId || !urlDatabase[shortURL] || !owned) {
+    res.send("You do not have permission to delete that URL.");
+  }
+  delete urlDatabase[shortURL];
   res.redirect('/urls/');
 });
 
