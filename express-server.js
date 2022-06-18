@@ -5,6 +5,8 @@ const PORT = 8080; // default port 8080
 const cookieParser = require('cookie-parser');
 const cookieSession = require("cookie-session");
 
+const { urlsForUser, checkLogIn, lookUpEmail, getIdFromEmail, generateRandomString } = require('./helpers');
+
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 
@@ -60,7 +62,7 @@ app.get("/hello", (req, res) => {
 
 //URLS page
 app.get("/urls", (req, res) => {
-  const userId = checkLogIn(req, res);
+  const userId = checkLogIn(req, res, users);
   const urls = urlsForUser(userId, urlDatabase);
 
   const templateVars = { user: users[userId], urls };
@@ -70,7 +72,7 @@ app.get("/urls", (req, res) => {
 
 //CREATE URL page
 app.get("/urls/new", (req, res) => {
-  const userId = checkLogIn(req, res);
+  const userId = checkLogIn(req, res, users);
   const urls = urlsForUser(userId, urlDatabase);
 
   const templateVars = { user: users[userId], urls };
@@ -83,7 +85,7 @@ app.get("/urls/new", (req, res) => {
 
 //URL show page (where edit is)
 app.get("/urls/:shortURL", (req, res) => {
-  const userId = checkLogIn(req, res);
+  const userId = checkLogIn(req, res, users);
 
   const shortURL = req.params.shortURL;
   const longURL = req.params.longURL;
@@ -93,7 +95,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
 //create shortURL
 app.post("/urls", (req, res) => {
-  const userId = checkLogIn(req, res);
+  const userId = checkLogIn(req, res, users);
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   //add to db object
@@ -117,7 +119,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 //DELETE URL
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const userId = checkLogIn(req, res);
+  const userId = checkLogIn(req, res, users);
   const owned = urlsForUser(userId, urlDatabase);
   const shortURL = req.params.shortURL;
   if (!userId || !urlDatabase[shortURL] || !owned) {
@@ -129,7 +131,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 //EDIT shortURL
 app.post("/urls/:shortURL", (req, res) => {
-  const userId = checkLogIn(req, res);
+  const userId = checkLogIn(req, res, users);
   const owned = urlsForUser(userId, urlDatabase);
   const shortURL = req.params.shortURL;
   const longURL = req.body["name"];
@@ -147,10 +149,10 @@ app.post("/urls/:shortURL", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  const userID = getIdFromEmail(email);
+  const userID = getIdFromEmail(email, users);
   const hashedPassword = users[userID].password;
 
-  if (email !== lookUpEmail(email)) {
+  if (email !== lookUpEmail(email, users)) {
     return res.status(403).send("That email has not been registered to an account (403)");
   }
   if (bcrypt.compareSync(password, hashedPassword)) {
@@ -204,7 +206,7 @@ app.post("/register/", (req, res) => {
     return res.status(400).send("Please enter an email and a password (400)");
 
     //checks if the email is already registered
-  } else if (email === lookUpEmail(email)) {
+  } else if (email === lookUpEmail(email, users)) {
     return res.status(400).send("Email address has already been registered to an account (400)");
 
   } else {

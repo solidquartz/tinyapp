@@ -48,4 +48,4 @@ const urlsForUser = (id, urlDatabase) => {
   } return userURLs;
 };
 
-module.exports = urlsForUser, checkLogIn, lookUpEmail, getIdFromEmail, generateRandomString;
+module.exports = { urlsForUser, checkLogIn, lookUpEmail, getIdFromEmail, generateRandomString };
