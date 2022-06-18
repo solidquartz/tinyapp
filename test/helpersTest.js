@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 
-const { urlsForUser, checkLogIn, lookUpEmail, getIdFromEmail, generateRandomString } = require('../helpers');
+const { lookUpEmail, getIdFromEmail, generateRandomString } = require('../helpers');
 
 const testUsers = {
   "userRandomID": {
@@ -15,16 +15,6 @@ const testUsers = {
   }
 };
 
-const testDatabase = {
-  sgq3y6: {
-    longURL: "https://www.tsn.ca",
-    userID: "userRandomID"
-  },
-  i3BoGr: {
-    longURL: "https://www.google.ca",
-    userID: "aJ48lW"
-  }
-};
 
 //////////////////////////////////////////
 /////////////////////////////////////////

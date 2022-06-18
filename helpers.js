@@ -1,34 +1,39 @@
-////////////////////////
-
-//helper function to generate shortURL
+//generate shortURL
 const generateRandomString = (length = 6) => Math.random().toString(20).substr(2, length);
 
-//helper function to link email with userId
-const getIdFromEmail = (email, users) => { //takes in the users object
+//use email to get userID number. use to log in.
+const getIdFromEmail = (email, users) => {
   for (let userId in users) {
+
     if (email === users[userId].email) {
       return userId;
     }
   } return null;
 };
 
-//look up email
+//look up email. use to  check if an account exists
 const lookUpEmail = (email, users) => {
+
   for (let userId in users) {
+
     if (email === users[userId].email) {
+
       return users[userId].email;
     }
   }
   return null;
 };
 
-//check if user is logged in
+//check if user is logged in to set permissions and redirects
 const checkLogIn = (req, res, users) => {
   const userId = req.session.user_id;
+
   if (!userId) {
     res.send("Please log in or register.");
+
   } else {
     for (const user in users) {
+
       if (user === userId) {
         return userId;
       }
@@ -37,7 +42,7 @@ const checkLogIn = (req, res, users) => {
   }
 };
 
-//returns the URLS linked to user, in new object
+//returns the URLS linked to user, in a new object
 const urlsForUser = (id, urlDatabase) => {
   let userURLs = {};
 
@@ -46,8 +51,8 @@ const urlsForUser = (id, urlDatabase) => {
       userURLs[shortURL] = urlDatabase[shortURL];
     }
   }
-  console.log(userURLs);
   return userURLs;
 };
 
+//////////////////
 module.exports = { urlsForUser, checkLogIn, lookUpEmail, getIdFromEmail, generateRandomString };

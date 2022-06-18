@@ -1,7 +1,8 @@
+////////////REQUIREMENTS////////////
 const express = require("express");
 const bcrypt = require('bcryptjs');
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 8080;
 const cookieParser = require('cookie-parser');
 const cookieSession = require("cookie-session");
 
@@ -19,7 +20,11 @@ app.use(cookieSession({
   keys: ['bubble', 'tea', 'lilac'],
 }));
 
+
+////////////////////////////////////////
 //////////////databases////////////////
+/////////////////////////////////////
+
 
 const urlDatabase = {
   sgq3y6: {
@@ -47,7 +52,10 @@ const users = {
 };
 
 ////////////////////////////////////////
+//////////////endpoints////////////////
+/////////////////////////////////////
 
+//landing page
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -66,7 +74,6 @@ app.get("/urls", (req, res) => {
   const urls = urlsForUser(userId, urlDatabase);
 
   const templateVars = { user: users[userId], urls };
-
   res.render("urls_index", templateVars);
 });
 
@@ -76,19 +83,22 @@ app.get("/urls/new", (req, res) => {
   const urls = urlsForUser(userId, urlDatabase);
 
   const templateVars = { user: users[userId], urls };
+
   if (urls) {
     res.render("urls_new", templateVars);
+
   } else {
     res.send("Permission denied. Please log in or register.");
   }
 });
 
-//URL show page (where edit is)
+//URL Show page (Edit)
 app.get("/urls/:shortURL", (req, res) => {
   const userId = checkLogIn(req, res, users);
+  
   const shortURL = req.params.shortURL;
   const longURL = req.params.longURL;
-  
+
   const templateVars = { user: users[userId], urlDatabase, shortURL, longURL };
   res.render("urls_show", templateVars);
 });
