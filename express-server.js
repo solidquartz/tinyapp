@@ -127,7 +127,6 @@ app.get("/urls", (req, res) => {
 
   const templateVars = { user: users[userId], urls };
 
-  console.log("urls are: ", urls);
   res.render("urls_index", templateVars);
 });
 
@@ -197,7 +196,7 @@ app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = req.body["name"];
   if (!userId || !urlDatabase[shortURL] || !owned) {
-    res.send("You do not have permission to editthat URL.");
+    res.send("You do not have permission to edit that URL.");
   }
   urlDatabase[shortURL].longURL = longURL;
   res.redirect(`/urls/${shortURL}`);
@@ -255,7 +254,9 @@ app.get("/register", (req, res) => {
 app.post("/register/", (req, res) => {
   const userId = generateRandomString();
   const email = req.body.email;
+  const bcrypt = require('bcryptjs');
   const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
 
   if (email === "" || password === "") {
     return res.status(400).send("Please enter an email and a password (400)");
@@ -265,8 +266,8 @@ app.post("/register/", (req, res) => {
     return res.status(400).send("Email address has already been registered to an account (400)");
 
   } else {
-    users[userId] = { id: userId, email: email, password: password };
-    console.log(users);
+    users[userId] = { id: userId, email: email, password: hashedPassword };
+
     res.cookie("user_id", userId);
     res.redirect("/urls");
   }
