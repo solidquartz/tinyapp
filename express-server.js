@@ -178,7 +178,7 @@ app.get("/u/:shortURL", (req, res) => {
   res.send("Error! URL doesn't exist.");
 });
 
-//delete URL
+//DELETE URL
 app.post("/urls/:shortURL/delete", (req, res) => {
   const userId = checkLogIn(req, res);
   const owned = urlsForUser(userId, urlDatabase);
@@ -190,10 +190,15 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect('/urls/');
 });
 
-//post new longURL to shortURL
+//EDIT shortURL
 app.post("/urls/:shortURL", (req, res) => {
+  const userId = checkLogIn(req, res);
+  const owned = urlsForUser(userId, urlDatabase);
   const shortURL = req.params.shortURL;
   const longURL = req.body["name"];
+  if (!userId || !urlDatabase[shortURL] || !owned) {
+    res.send("You do not have permission to editthat URL.");
+  }
   urlDatabase[shortURL].longURL = longURL;
   res.redirect(`/urls/${shortURL}`);
 });
