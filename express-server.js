@@ -94,9 +94,7 @@ const checkPermission = (req, res) => {
   }
 };
 
-//returns the URLS where userID === id of logged user
-// //id - userId
-//create new object "urls", key: shortURL, value: longURL
+//returns the URLS linked to user, in new object
 const urlsForUser = (id, urlDatabase) => {
   let userURLs = {};
 
@@ -104,7 +102,7 @@ const urlsForUser = (id, urlDatabase) => {
     if (urlDatabase[shortURL].userID === id) {
       userURLs[shortURL] = urlDatabase[shortURL];
     }
-  }
+  } return userURLs;
 };
 
 
@@ -125,9 +123,11 @@ app.get("/hello", (req, res) => {
 //URLS page
 app.get("/urls", (req, res) => {
   const userId = checkPermission(req, res);
-  const userURLs = urlsForUser(userId);
+  const urls = urlsForUser(userId, urlDatabase);
 
-  const templateVars = { user: users[userId], userURLs };
+  const templateVars = { user: users[userId], urls };
+
+  console.log("urls are: ", urls);
   res.render("urls_index", templateVars);
 });
 
