@@ -33,15 +33,14 @@
       </thead>
 
       <tbody>
-        <% for(let shortURL in urlDatabase) { %>
+        <% for(let shortURL in userURLs) { %>
 
-          <% if (urlDatabase[shortURL].userID == user.id) { %>
           <tr>
             <td>
               <%= shortURL %>
             </td>
             <td>
-              <%= urlDatabase[shortURL].longURL %>
+              <%= userURLs[shortURL].longURL %>
             </td>
             <td>
               <form method="GET" action="/urls/<%= shortURL %>"><button type="submit"
@@ -53,7 +52,7 @@
             </td>
           </tr>
           <% } %>
-          <% } %>
+       
       </tbody>
 
     </table>

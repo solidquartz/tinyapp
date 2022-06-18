@@ -62,7 +62,6 @@ const lookUpEmail = (email) => {
   return null;
 };
 
-
 //check if user is logged in
 const checkLogIn = (req, res) => {
 
@@ -80,6 +79,35 @@ const checkLogIn = (req, res) => {
   }
 };
 
+
+//check if user has permission to view
+const checkPermission = (req, res) => {
+  const userId = req.cookies["user_id"];
+  if (!userId) {
+    res.send("Error! Please log in or register.");
+  } else {
+    for (const user in users) {
+      if (user === userId) {
+        return userId;
+      }
+    }
+  }
+};
+
+//returns the URLS where userID === id of logged user
+// //id - userId
+//create new object "urls", key: shortURL, value: longURL
+const urlsForUser = (id, urlDatabase) => {
+  let userURLs = {};
+
+  for (const shortURL in urlDatabase) {
+    if (urlDatabase[shortURL].userID === id) {
+      userURLs[shortURL] = urlDatabase[shortURL];
+    }
+  }
+};
+
+
 //////////////////////////////////
 
 app.get("/", (req, res) => {
@@ -94,15 +122,16 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
-//index page
+//URLS page
 app.get("/urls", (req, res) => {
-  const userId = checkLogIn(req, res);
+  const userId = checkPermission(req, res);
+  const userURLs = urlsForUser(userId);
 
-  const templateVars = { user: users[userId], urlDatabase };
+  const templateVars = { user: users[userId], userURLs };
   res.render("urls_index", templateVars);
 });
 
-//create URL page
+//CREATE URL page
 app.get("/urls/new", (req, res) => {
   const userId = checkLogIn(req, res);
   const templateVars = { user: users[userId], urls: urlDatabase };
@@ -234,4 +263,3 @@ app.post("/register/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
