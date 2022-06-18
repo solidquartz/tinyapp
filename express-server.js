@@ -64,10 +64,9 @@ const lookUpEmail = (email) => {
 
 //check if user is logged in
 const checkLogIn = (req, res) => {
-
   const userId = req.cookies["user_id"];
   if (!userId) {
-    res.redirect("/login");
+    res.send("Please log in or register.");
   } else {
     for (const user in users) {
       if (user === userId) {
@@ -81,18 +80,19 @@ const checkLogIn = (req, res) => {
 
 
 //check if user has permission to view
-const checkPermission = (req, res) => {
-  const userId = req.cookies["user_id"];
-  if (!userId) {
-    res.send("Error! Please log in or register.");
-  } else {
-    for (const user in users) {
-      if (user === userId) {
-        return userId;
-      }
-    }
-  }
-};
+//was used in get/urls
+// const checkPermission = (req, res) => {
+//   const userId = req.cookies["user_id"];
+//   if (!userId) {
+//     res.send("Please log in or register.");
+//   } else {
+//     for (const user in users) {
+//       if (user === userId) {
+//         return userId;
+//       }
+//     }
+//   }
+// };
 
 //returns the URLS linked to user, in new object
 const urlsForUser = (id, urlDatabase) => {
@@ -122,7 +122,7 @@ app.get("/hello", (req, res) => {
 
 //URLS page
 app.get("/urls", (req, res) => {
-  const userId = checkPermission(req, res);
+  const userId = checkLogIn(req, res);
   const urls = urlsForUser(userId, urlDatabase);
 
   const templateVars = { user: users[userId], urls };
@@ -134,9 +134,13 @@ app.get("/urls", (req, res) => {
 //CREATE URL page
 app.get("/urls/new", (req, res) => {
   const userId = checkLogIn(req, res);
-  const templateVars = { user: users[userId], urls: urlDatabase };
-  if (userId) {
+  const urls = urlsForUser(userId, urlDatabase);
+
+  const templateVars = { user: users[userId], urls};
+  if (urls) {
     res.render("urls_new", templateVars);
+  } else {
+    res.send("Permission denied. Please log in or register.");
   }
 });
 
