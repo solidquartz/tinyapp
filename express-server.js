@@ -57,7 +57,7 @@ const users = {
 
 //landing page
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.redirect("/login");
 });
 
 app.get("/urls.json", (req, res) => {
@@ -81,7 +81,6 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const userId = checkLogIn(req, res, users);
   const urls = urlsForUser(userId, urlDatabase);
-
   const templateVars = { user: users[userId], urls };
 
   if (urls) {
@@ -95,7 +94,6 @@ app.get("/urls/new", (req, res) => {
 //URL Show page (Edit)
 app.get("/urls/:shortURL", (req, res) => {
   const userId = checkLogIn(req, res, users);
-  
   const shortURL = req.params.shortURL;
   const longURL = req.params.longURL;
 
@@ -108,9 +106,9 @@ app.post("/urls", (req, res) => {
   const userId = checkLogIn(req, res, users);
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
+
   //add to db object
   urlDatabase[shortURL] = { "longURL": longURL, "userID": userId };
-  console.log(urlDatabase);
 
   res.redirect(`/urls/${shortURL}`);
 });
@@ -119,6 +117,7 @@ app.post("/urls", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
 
   for (const shortURL in urlDatabase) {
+
     if (shortURL === req.params.shortURL) {
       const longURL = urlDatabase[req.params.shortURL].longURL;
       res.redirect(longURL);
@@ -129,22 +128,27 @@ app.get("/u/:shortURL", (req, res) => {
 
 //DELETE URL
 app.post("/urls/:shortURL/delete", (req, res) => {
+  //checks permission
   const userId = checkLogIn(req, res, users);
   const owned = urlsForUser(userId, urlDatabase);
+
   const shortURL = req.params.shortURL;
   if (!userId || !urlDatabase[shortURL] || !owned) {
     res.send("You do not have permission to delete that URL.");
   }
+
   delete urlDatabase[shortURL];
   res.redirect('/urls/');
 });
 
 //EDIT shortURL
 app.post("/urls/:shortURL", (req, res) => {
+  //checks permission
   const userId = checkLogIn(req, res, users);
   const owned = urlsForUser(userId, urlDatabase);
   const shortURL = req.params.shortURL;
   const longURL = req.body["name"];
+
   if (!userId || !urlDatabase[shortURL] || !owned) {
     res.send("You do not have permission to edit that URL.");
   }
@@ -185,6 +189,7 @@ app.post("/logout", (req, res) => {
 app.get("/login", (req, res) => {
   const userId = users[req.session.user_id];
   const templateVars = { user: userId || null };
+  
   if (userId) {
     res.redirect("/urls");
   }
