@@ -18,7 +18,7 @@ const testUsers = {
 const testDatabase = {
   sgq3y6: {
     longURL: "https://www.tsn.ca",
-    userID: "aJ48lW"
+    userID: "userRandomID"
   },
   i3BoGr: {
     longURL: "https://www.google.ca",
@@ -57,13 +57,5 @@ describe('lookUpEmail', function() {
   it("should return null if the email doesn't exist in the db", function() {
     const email = lookUpEmail("user3@example.com", testUsers);
     assert.isNull(email, "The email was not found");
-  });
-});
-
-describe('checkLogin', function() {
-  it('should return the email if it exists in the database', function() {
-    const email = lookUpEmail("user@example.com", testUsers);
-    const expectedEmail = "user@example.com";
-    assert.strictEqual(email, expectedEmail, "The email was found");
   });
 });

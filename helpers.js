@@ -45,7 +45,9 @@ const urlsForUser = (id, urlDatabase) => {
     if (urlDatabase[shortURL].userID === id) {
       userURLs[shortURL] = urlDatabase[shortURL];
     }
-  } return userURLs;
+  }
+  console.log(userURLs);
+  return userURLs;
 };
 
 module.exports = { urlsForUser, checkLogIn, lookUpEmail, getIdFromEmail, generateRandomString };
