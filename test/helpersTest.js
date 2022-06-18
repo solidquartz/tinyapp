@@ -29,6 +29,14 @@ const testDatabase = {
 //////////////////////////////////////////
 /////////////////////////////////////////
 
+describe('generateRandomString', function() {
+  it('should return a string with a length of 6', function() {
+    const stringLength = generateRandomString().length;
+    const expectedStringLength = 6;
+    assert.strictEqual(stringLength, expectedStringLength, "The string was 6 characters long");
+  });
+});
+
 describe('getIdFromEmail', function() {
   it('should return a user ID with valid email', function() {
     const userId = getIdFromEmail("user@example.com", testUsers);
