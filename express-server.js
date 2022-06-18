@@ -3,6 +3,8 @@ const bcrypt = require('bcryptjs');
 const app = express();
 const PORT = 8080; // default port 8080
 const cookieParser = require('cookie-parser');
+const cookieSession = require("cookie-session");
+
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 
@@ -10,7 +12,10 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cookieParser());
-
+app.use(cookieSession({
+  name: 'session',
+  keys: ['bubble', 'tea', 'lilac'],
+}));
 
 ////////databases//////////
 
@@ -48,7 +53,7 @@ const generateRandomString = (length = 6) => Math.random().toString(20).substr(2
 const getIdFromEmail = (email) => {
   for (let userId in users) {
     if (email === users[userId].email) {
-      return users[userId];
+      return userId;
     }
   } return null;
 };
@@ -65,7 +70,7 @@ const lookUpEmail = (email) => {
 
 //check if user is logged in
 const checkLogIn = (req, res) => {
-  const userId = req.cookies["user_id"];
+  const userId = req.session.user_id;
   if (!userId) {
     res.send("Please log in or register.");
   } else {
@@ -74,26 +79,9 @@ const checkLogIn = (req, res) => {
         return userId;
       }
     }
-    res.clearCookie("user_id");
     res.redirect("/login");
   }
 };
-
-
-//check if user has permission to view
-//was used in get/urls
-// const checkPermission = (req, res) => {
-//   const userId = req.cookies["user_id"];
-//   if (!userId) {
-//     res.send("Please log in or register.");
-//   } else {
-//     for (const user in users) {
-//       if (user === userId) {
-//         return userId;
-//       }
-//     }
-//   }
-// };
 
 //returns the URLS linked to user, in new object
 const urlsForUser = (id, urlDatabase) => {
@@ -210,17 +198,17 @@ app.post("/urls/:shortURL", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  const user = getIdFromEmail(email);
-  const hashedPassword = user.password;
-  console.log("login: ", users);
+  const userID = getIdFromEmail(email);
+  const hashedPassword = users[userID].password;
 
   if (email !== lookUpEmail(email)) {
     return res.status(403).send("That email has not been registered to an account (403)");
   }
   if (bcrypt.compareSync(password, hashedPassword)) {
 
-    res.cookie("user_id", user.id);
+    req.session.user_id = userID;
     res.redirect("/urls");
+
   } else {
     return res.status(403).send("Email and password do not match (403)");
   }
@@ -228,14 +216,14 @@ app.post("/login", (req, res) => {
 
 //log out
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  req.session = null;
   res.redirect("/login");
 });
 
 //login page
 app.get("/login", (req, res) => {
-  const userId = req.cookies["user_id"];
-  const templateVars = { user: req.cookies["user_id"] || null };
+  const userId = users[req.session.user_id];
+  const templateVars = { user: userId || null };
   if (userId) {
     res.redirect("/urls");
   }
@@ -246,7 +234,7 @@ app.get("/login", (req, res) => {
 
 //register page
 app.get("/register", (req, res) => {
-  const userId = req.cookies["user_id"];
+  const userId = req.session.user_id;
 
   if (userId) {
     res.redirect("/urls");
@@ -259,9 +247,9 @@ app.get("/register", (req, res) => {
 app.post("/register/", (req, res) => {
   const userId = generateRandomString();
   const email = req.body.email;
-  const bcrypt = require('bcryptjs');
   const password = req.body.password;
-  const hashedPassword = bcrypt.hashSync(password, 10);
+  const salt = bcrypt.genSaltSync(10);
+  const hashedPassword = bcrypt.hashSync(password, salt);
 
   if (email === "" || password === "") {
     return res.status(400).send("Please enter an email and a password (400)");
@@ -273,7 +261,7 @@ app.post("/register/", (req, res) => {
   } else {
     users[userId] = { id: userId, email: email, password: hashedPassword };
     console.log("login: ", users);
-    res.cookie("user_id", userId);
+    req.session.user_id = userId;
     res.redirect("/urls");
   }
 });
