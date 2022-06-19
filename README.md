@@ -6,8 +6,9 @@ It is Aky Mac Donald's first ever full stack application, and their second proje
 
 ## Final Product
 
-!["screenshot description"](#)
-!["screenshot description"](#)
+!["My URLs page, which is unique to each user."](https://github.com/solidquartz/tinyapp/blob/main/docs/urls_page.jpg?raw=true)
+!["Newly created ShortURL, featuring the ability to edit the address it points to"](https://github.com/solidquartz/tinyapp/blob/main/docs/url_created.jpg?raw=true)
+!["Login Page"](https://github.com/solidquartz/tinyapp/blob/main/docs/login_page.jpg?raw=true)
 
 ## Dependencies
 
