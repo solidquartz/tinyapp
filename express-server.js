@@ -226,7 +226,7 @@ app.post("/register/", (req, res) => {
 
   } else {
     users[userId] = { id: userId, email: email, password: hashedPassword };
-    console.log("login: ", users);
+    
     req.session.user_id = userId;
     res.redirect("/urls");
   }
